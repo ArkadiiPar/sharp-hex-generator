@@ -7,7 +7,7 @@ def float_to_hex(f):
     return struct.pack('<f', f).hex()
 
 
-# --- Все строки из оригинального сообщения (сохранены полностью) ---
+# --- Все строки из оригинального сообщения ---
 original_hex_lines = [
     # Sharp very low
     "0000e0401d8fc2753d",
@@ -67,20 +67,23 @@ original_hex_lines = [
 ]
 
 
-# --- Индексы начала и конца для каждого уровня ---
-level_slices = {
+# --- Индексы для двух групп ---
+level_slices_main = {
     "Sharp very low": (0, 6),
     "Sharp low": (6, 12),
     "Sharp med": (12, 18),
     "Sharp high": (18, 24),
     "Sharp very high": (24, 30),
+}
+
+level_slices_bento = {
     "Sharp bento low": (30, 36),
     "Sharp bento high": (36, 42)
 }
 
-# --- Значения по умолчанию ---
 
-sharp_levels = [
+# --- Все уровни ---
+all_sharp_levels = [
     {"name": "Sharp very low",  "default": [7.0, 0.060, 3.075, 0.040, 1.875, 0.058]},
     {"name": "Sharp low",       "default": [8.6, 0.060, 3.69, 0.040, 2.25, 0.058]},
     {"name": "Sharp med",       "default": [10.0, 0.060, 4.225, 0.040, 2.5, 0.058]},
@@ -90,31 +93,19 @@ sharp_levels = [
     {"name": "Sharp bento high","default": [18.5, 0.0174, 2.70, 0.0187, 1.70, 0.02]}
 ]
 
-# --- Интерфейс ---
-st.set_page_config(page_title="HEX Sharp Config Generator", layout="wide")
-st.title("🔧 Sharp Level HEX Code Generator")
+# --- Разделение на две группы ---
+main_levels = all_sharp_levels[:5]
+bento_levels = all_sharp_levels[5:]
 
-st.markdown("Измените параметры ниже и получите готовый HEX-код.")
 
-all_inputs = []
-
-for idx, level in enumerate(sharp_levels):
-    with st.expander(level["name"], expanded=True):
-        cols = st.columns(3)
-        l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"{idx}_l1")
-        l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"{idx}_l1a")
-        l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"{idx}_l2")
-        l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"{idx}_l2a")
-        l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"{idx}_l3")
-        l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"{idx}_l3a")
-        all_inputs.append([l1, l1a, l2, l2a, l3, l3a])
-
-if st.button("🚀 Сгенерировать HEX"):
+# --- Функция генерации HEX ---
+def generate_hex(values_list, level_slices, start_header=True):
     lines = []
 
-    for i, values in enumerate(all_inputs):
+    for i, values in enumerate(values_list):
         l1, l1a, l2, l2a, l3, l3a = values
-        start, end = level_slices[sharp_levels[i]["name"]]
+        name = values_list[i]["name"]
+        start, end = level_slices[name]
 
         modified_block = original_hex_lines[start:end]
         modified_block[0] = f"{float_to_hex(l1)}1d{float_to_hex(l1a)}"
@@ -123,13 +114,61 @@ if st.button("🚀 Сгенерировать HEX"):
 
         lines.extend(modified_block)
 
-    full_hex = "0a490a140d" + "".join(lines)
+    hex_code = "".join(lines)
+    if start_header:
+        hex_code = "0a490a140d" + hex_code
+    return hex_code
 
-    st.text_area("Сгенерированный HEX-код:", value=full_hex, height=400)
 
-    st.download_button(
-        label="⬇️ Скачать как .hex файл",
-        data=full_hex,
-        file_name="generated_output.hex",
-        mime="text/plain"
-    )
+# --- Интерфейс ---
+st.set_page_config(page_title="HEX Sharp Config Generator", layout="wide")
+st.title("🔧 Sharp Level HEX Code Generator (Разделённый)")
+
+st.markdown("### Генератор 1: Основные уровни резкости")
+
+main_inputs = []
+for idx, level in enumerate(main_levels):
+    with st.expander(level["name"], expanded=True):
+        cols = st.columns(3)
+        l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"main_l1_{idx}")
+        l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"main_l1a_{idx}")
+        l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"main_l2_{idx}")
+        l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"main_l2a_{idx}")
+        l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"main_l3_{idx}")
+        l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"main_l3a_{idx}")
+        main_inputs.append([l1, l1a, l2, l2a, l3, l3a, level])
+
+if st.button("🚀 Сгенерировать основной HEX"):
+    values_list = []
+    for vals in main_inputs:
+        l1, l1a, l2, l2a, l3, l3a, level = vals
+        values_list.append([l1, l1a, l2, l2a, l3, l3a])
+    
+    full_hex = generate_hex(values_list, level_slices_main, start_header=True)
+    st.text_area("Сгенерированный HEX (основные уровни):", value=full_hex, height=300)
+    st.download_button(label="⬇️ Скачать main.hex", data=full_hex, file_name="main_output.hex")
+
+
+st.markdown("### Генератор 2: Уровни Bento")
+
+bento_inputs = []
+for idx, level in enumerate(bento_levels):
+    with st.expander(level["name"], expanded=True):
+        cols = st.columns(3)
+        l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"bento_l1_{idx}")
+        l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"bento_l1a_{idx}")
+        l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"bento_l2_{idx}")
+        l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"bento_l2a_{idx}")
+        l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"bento_l3_{idx}")
+        l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"bento_l3a_{idx}")
+        bento_inputs.append([l1, l1a, l2, l2a, l3, l3a, level])
+
+if st.button("🚀 Сгенерировать Bento HEX"):
+    values_list = []
+    for vals in bento_inputs:
+        l1, l1a, l2, l2a, l3, l3a = vals[:6]
+        values_list.append([l1, l1a, l2, l2a, l3, l3a])
+
+    full_hex = generate_hex(values_list, level_slices_bento, start_header=False)
+    st.text_area("Сгенерированный HEX (Bento):", value=full_hex, height=300)
+    st.download_button(label="⬇️ Скачать bento.hex", data=full_hex, file_name="bento_output.hex")
