@@ -91,7 +91,6 @@ sharp_all_levels = [
     {"name": "Sharp bento high","default": [18.5, 0.0174, 2.70, 0.0187, 1.70, 0.02]}
 ]
 
-
 # --- Генератор Sharp HEX ---
 def generate_sharp_hex(values_list, level_names, level_slices, start_header=True):
     lines = []
@@ -116,7 +115,7 @@ def generate_sharp_hex(values_list, level_names, level_slices, start_header=True
 
 # --- LUMA HEX Data ---
 luma_original_lines = [
-    "00000a610a0f0d",  # ← заголовок всего LUMA-блока
+    "00000a610a0f0d",
 
     # Bayer luma denoise very low — 14 строк
     "0000803f", "15", "cdcccc3d", "1d", "ae50223f", "0a0f0d",
@@ -147,7 +146,7 @@ luma_original_lines = [
     "cdcc4c3e", "1d", "af3c9f3d", "12050d000020421dcdcccc3f250000003f0a610a0f0d"
 ]
 
-# --- Срезы для LUMA уровней ---
+# --- Срезы для уровней LUMA ---
 luma_slices = {
     "Bayer luma denoise very low": (1, 15),     # 1–14
     "Bayer luma denoise low":      (15, 29),    # 15–28
@@ -165,7 +164,6 @@ luma_levels = [
     {"name": "Bayer luma denoise very high", "default": [0.65, 0.15, 0.642869, 0.75, 0.10, 0.627118, 0.38, 0.10, 0.472521, 0.30, 0.10, 0.362973, 0.25, 0.0777525]}
 ]
 
-
 # --- Генератор LUMA HEX ---
 def generate_luma_hex(values_list, level_names, level_slices):
     lines = []
@@ -177,7 +175,12 @@ def generate_luma_hex(values_list, level_names, level_slices):
 
         modified_block = luma_original_lines[start:end]
 
-        # Замена только нужных значений
+        # Проверяем длину блока
+        if len(modified_block) < 28:
+            st.error(f"❌ Блок '{name}' слишком короткий. Требуется 28 элементов")
+            continue
+
+        # Замена значений
         modified_block[0] = float_to_hex(l1)     # L1
         modified_block[2] = float_to_hex(l1a)    # L1A
         modified_block[4] = float_to_hex(l1b)    # L1B
@@ -186,21 +189,21 @@ def generate_luma_hex(values_list, level_names, level_slices):
         modified_block[8] = float_to_hex(l2a)    # L2A
         modified_block[10] = float_to_hex(l2b)   # L2B
 
-        modified_block[12] = float_to_hex(l3)   # L3
-        modified_block[14] = float_to_hex(l3a)  # L3A
-        modified_block[16] = float_to_hex(l3b)  # L3B
+        modified_block[12] = float_to_hex(l3)    # L3
+        modified_block[14] = float_to_hex(l3a)   # L3A
+        modified_block[16] = float_to_hex(l3b)   # L3B
 
-        modified_block[18] = float_to_hex(l4)   # L4
-        modified_block[20] = float_to_hex(l4a)  # L4A
-        modified_block[22] = float_to_hex(l4b)  # L4B
+        modified_block[18] = float_to_hex(l4)    # L4
+        modified_block[20] = float_to_hex(l4a)   # L4A
+        modified_block[22] = float_to_hex(l4b)   # L4B
 
-        modified_block[24] = float_to_hex(l5)  # L5
-        modified_block[26] = float_to_hex(l5a)  # L5A
+        modified_block[24] = float_to_hex(l5)    # L5
+        modified_block[26] = float_to_hex(l5a)   # L5A
 
         lines.extend(modified_block)
 
     full_hex = "".join(lines)
-    full_hex = luma_original_lines[0] + full_hex  # добавляем заголовок в начало
+    full_hex = luma_original_lines[0] + full_hex  # добавляем заголовок
     return full_hex
 
 
@@ -209,7 +212,7 @@ st.set_page_config(page_title="HEX Sharp & Luma Config Generator", layout="wide"
 tab1, tab2 = st.tabs(["ImageSharp", "LUMA"])
 
 
-# --- Вкладка Sharp ---
+# --- Вкладка: Sharp ---
 with tab1:
     st.title("🔧 Sharp Level HEX Code Generator")
 
@@ -234,6 +237,7 @@ with tab1:
         st.text_area("Сгенерированный HEX (основные уровни):", value=full_hex, height=300)
         st.download_button(label="⬇️ Скачать main_output.hex", data=full_hex, file_name="main_output.hex")
 
+
     bento_inputs = []
     for idx, level in enumerate(sharp_all_levels[5:], start=5):
         with st.expander(level["name"], expanded=True):
@@ -256,7 +260,7 @@ with tab1:
         st.download_button(label="⬇️ Скачать bento_output.hex", data=full_hex, file_name="bento_output.hex")
 
 
-# --- Вкладка LUMA ---
+# --- Вкладка: LUMA ---
 with tab2:
     st.title("🔧 LUMA Level HEX Code Generator")
 
