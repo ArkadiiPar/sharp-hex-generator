@@ -123,7 +123,7 @@ if st.button("🚀 Сгенерировать HEX"):
 
         lines.extend(modified_block)
 
-    full_hex = ''.join(lines)
+    full_hex = '\n'.join(lines)
 
     st.text_area("Сгенерированный HEX-код:", value=full_hex, height=400)
 
