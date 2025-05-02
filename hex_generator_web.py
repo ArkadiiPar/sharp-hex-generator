@@ -7,35 +7,63 @@ def float_to_hex(f):
     return struct.pack('<f', f).hex()
 
 
-# --- Sharp HEX Data (оставляем как есть) ---
+# --- Sharp HEX Data ---
 sharp_hex_lines = [
-    "0000e0401d8fc2753d", "250000803f2d0000803f0a140d",
-    "cdcc44401d0ad7233d", "250000803f2d0000803f0a140d",
-    "0000f03f1d68916d3d", "250000803f2d0000803f12050d0000a03f0a490a140d",
+    # Sharp very low
+    "0000e0401d8fc2753d",
+    "250000803f2d0000803f0a140d",
+    "cdcc44401d0ad7233d",
+    "250000803f2d0000803f0a140d",
+    "0000f03f1d68916d3d",
+    "250000803f2d0000803f12050d0000a03f0a490a140d",
 
-    "9a9909411d8fc2753d", "250000803f2d0000803f0a140d",
-    "f6286c401d0ad7233d", "250000803f2d0000803f0a140d",
-    "000010401d68916d3d", "250000803f2d0000803f12050d000020400a490a140d",
+    # Sharp low
+    "9a9909411d8fc2753d",
+    "250000803f2d0000803f0a140d",
+    "f6286c401d0ad7233d",
+    "250000803f2d0000803f0a140d",
+    "000010401d68916d3d",
+    "250000803f2d0000803f12050d000020400a490a140d",
 
-    "000020411d8fc2753d", "250000803f2d0000803f0a140d",
-    "333387401d0ad7233d", "250000803f2d0000803f0a140d",
-    "000020401d68916d3d", "250000803f2d0000803f12050d0000a0400a490a140d",
+    # Sharp med
+    "000020411d8fc2753d",
+    "250000803f2d0000803f0a140d",
+    "333387401d0ad7233d",
+    "250000803f2d0000803f0a140d",
+    "000020401d68916d3d",
+    "250000803f2d0000803f12050d0000a0400a490a140d",
 
-    "000020411d022b873d", "250000803f2d0000803f0a140d",
-    "14ae77401d0ad7233d", "250000803f2d0000803f0a140d",
-    "0ad793401d3480b73c", "250000803f2d0000803f12050d000020410a490a140d",
+    # Sharp high
+    "000020411d022b873d",
+    "250000803f2d0000803f0a140d",
+    "14ae77401d0ad7233d",
+    "250000803f2d0000803f0a140d",
+    "0ad793401d3480b73c",
+    "250000803f2d0000803f12050d000020410a490a140d",
 
-    "cdcc34411dea95323d", "250000803f2d0000803f0a140d",
-    "cdcc6c401d6f12033d", "250000803f2d0000803f0a140d",
-    "333303401ded0dbe3c", "250000803f2d0000803f12050d0000a0410a490a140d",
+    # Sharp very high
+    "cdcc34411dea95323d",
+    "250000803f2d0000803f0a140d",
+    "cdcc6c401d6f12033d",
+    "250000803f2d0000803f0a140d",
+    "333303401ded0dbe3c",
+    "250000803f2d0000803f12050d0000a0410a490a140d",
 
-    "000080411d77be9f3c", "250000803f2d0000803f0a140d",
-    "666646401dc1caa13c", "250000803f2d0000803f0a140d",
-    "85ebf13f1d0ad7a33c", "250000803f2d0000803f12050d000020420a490a140d",
+    # Sharp bento low
+    "000080411d77be9f3c",
+    "250000803f2d0000803f0a140d",
+    "666646401dc1caa13c",
+    "250000803f2d0000803f0a140d",
+    "85ebf13f1d0ad7a33c",
+    "250000803f2d0000803f12050d000020420a490a140d",
 
-    "000094411d728a8e3c", "250000803f2d0000803f0a140d",
-    "cdcc2c401dbe30993c", "250000803f2d0000803f0a140d",
-    "9a99d93f1d0ad7a33c", "250000803f2d0000803f12050d0000a042000000"
+    # Sharp bento high
+    "000094411d728a8e3c",
+    "250000803f2d0000803f0a140d",
+    "cdcc2c401dbe30993c",
+    "250000803f2d0000803f0a140d",
+    "9a99d93f1d0ad7a33c",
+    "250000803f2d0000803f12050d0000a042000000"
 ]
 
 sharp_slices_main = {
@@ -106,7 +134,7 @@ luma_original_blocks = [
     
     # Sharp bento high
     ["3333333f", "15", "cdcccc3d", "1d", "5a469a3e", "0a0f0d"],
-
+    
     ["3333333f", "15", "9a99993d", "1d", "6616913e", "0a0f0d"],
     ["9a99193f", "15", "0000803d", "1d", "f20bbf3e", "0a0a0d"],
     ["0000003f", "1d", "d1ff143f", "12050d0000a0411dcdcccc3f250000003f0a610a0f0d"],
@@ -146,40 +174,51 @@ luma_levels = [
 ]
 
 
-# --- Генератор LUMA HEX (исправлённый) ---
+# --- Генератор LUMA HEX ---
 def generate_luma_hex(values_list, block_templates, level_positions):
     lines = []
 
     for i, values in enumerate(values_list):
         l1, l1a, l1b, l2, l2a, l2b, l3, l3a, l3b, l4, l4a, l4b, l5, l5a = values
-        level_name = level_positions[i]["name"]
-        block_index = luma_level_positions[level_name]
+        level_name = values_list[i]["name"] if isinstance(values_list[i], dict) else values_list[i][0]
+        if isinstance(level_name, dict):
+            level_name = level_name["name"]
 
-        # Берём оригинальный блок
+        block_index = luma_level_positions[level_name]
         modified_block = block_templates[block_index].copy()
 
         # Замена значений по индексам внутри блока
-        modified_block[0] = float_to_hex(l1)
-        modified_block[2] = float_to_hex(l1a)
-        modified_block[4] = float_to_hex(l1b)
+        if len(modified_block) > 0:
+            modified_block[0] = float_to_hex(l1)
+        if len(modified_block) > 2:
+            modified_block[2] = float_to_hex(l1a)
+        if len(modified_block) > 4:
+            modified_block[4] = float_to_hex(l1b)
 
         if len(modified_block) > 6:
             modified_block[6] = float_to_hex(l2)
+        if len(modified_block) > 8:
             modified_block[8] = float_to_hex(l2a)
+        if len(modified_block) > 10:
             modified_block[10] = float_to_hex(l2b)
 
         if len(modified_block) > 12:
             modified_block[12] = float_to_hex(l3)
+        if len(modified_block) > 14:
             modified_block[14] = float_to_hex(l3a)
+        if len(modified_block) > 16:
             modified_block[16] = float_to_hex(l3b)
 
         if len(modified_block) > 18:
             modified_block[18] = float_to_hex(l4)
+        if len(modified_block) > 20:
             modified_block[20] = float_to_hex(l4a)
+        if len(modified_block) > 22:
             modified_block[22] = float_to_hex(l4b)
 
         if len(modified_block) > 24:
             modified_block[24] = float_to_hex(l5)
+        if len(modified_block) > 26:
             modified_block[26] = float_to_hex(l5a)
 
         lines.extend(modified_block)
@@ -202,7 +241,46 @@ with tab1:
         with st.expander(level["name"], expanded=True):
             cols = st.columns(3)
             l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"main_l1_{idx}")
-            l1a = cols[1].number_input("L1A", value=level["name"]=="Sharp bento low", expanded=True)
+            l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"main_l1a_{idx}")
+            l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"main_l2_{idx}")
+            l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"main_l2a_{idx}")
+            l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"main_l3_{idx}")
+            l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"main_l3a_{idx}")
+            main_inputs.append([l1, l1a, l2, l2a, l3, l3a])
+
+    if st.button("🚀 Сгенерировать основной HEX"):
+        full_hex = generate_sharp_hex(main_inputs, sharp_all_levels[:5], sharp_slices_main, start_header=True)
+        st.text_area("Сгенерированный HEX (основные уровни):", value=full_hex, height=300)
+        st.download_button(label="⬇️ Скачать main_output.hex", data=full_hex, file_name="main_output.hex")
+
+
+    st.markdown("### Bento уровни")
+    bento_inputs = []
+    for idx, level in enumerate(sharp_all_levels[5:], start=5):
+        with st.expander(level["name"], expanded=True):
+            cols = st.columns(3)
+            l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"bento_l1_{idx}")
+            l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"bento_l1a_{idx}")
+            l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"bento_l2_{idx}")
+            l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"bento_l2a_{idx}")
+            l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"bento_l3_{idx}")
+            l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"bento_l3a_{idx}")
+            bento_inputs.append([l1, l1a, l2, l2a, l3, l3a])
+
+    if st.button("🚀 Сгенерировать Bento HEX"):
+        full_hex = generate_sharp_hex(bento_inputs, sharp_all_levels[5:], sharp_slices_bento, start_header=False)
+        st.text_area("Сгенерированный HEX (Bento):", value=full_hex, height=300)
+        st.download_button(label="⬇️ Скачать bento_output.hex", data=full_hex, file_name="bento_output.hex")
+
+
+# === LUMA TAB ===
+with tab2:
+    st.title("🔧 LUMA Level HEX Code Generator")
+
+    luma_inputs = []
+    for idx, level in enumerate(luma_levels):
+        with st.expander(level["name"], expanded=True):
+            cols = st.columns(3)
             l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"luma_l1_{idx}")
             l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"luma_l1a_{idx}")
             l1b = cols[2].number_input("L1B", value=level["default"][2], format="%.4f", key=f"luma_l1b_{idx}")
@@ -225,6 +303,6 @@ with tab1:
             luma_inputs.append([l1, l1a, l1b, l2, l2a, l2b, l3, l3a, l3b, l4, l4a, l4b, l5, l5a])
 
     if st.button("🚀 Сгенерировать LUMA HEX"):
-        full_hex = generate_luma_hex(luma_inputs, luma_original_blocks, luma_levels)
+        full_hex = generate_luma_hex(luma_inputs, luma_original_blocks, luma_level_positions)
         st.text_area("Сгенерированный HEX (LUMA):", value=full_hex, height=400)
         st.download_button(label="⬇️ Скачать luma_output.hex", data=full_hex, file_name="luma_output.hex")
