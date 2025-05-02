@@ -7,63 +7,35 @@ def float_to_hex(f):
     return struct.pack('<f', f).hex()
 
 
-# --- Sharp HEX Data ---
+# --- Sharp HEX Data (оставляем как есть) ---
 sharp_hex_lines = [
-    # Sharp very low
-    "0000e0401d8fc2753d",
-    "250000803f2d0000803f0a140d",
-    "cdcc44401d0ad7233d",
-    "250000803f2d0000803f0a140d",
-    "0000f03f1d68916d3d",
-    "250000803f2d0000803f12050d0000a03f0a490a140d",
+    "0000e0401d8fc2753d", "250000803f2d0000803f0a140d",
+    "cdcc44401d0ad7233d", "250000803f2d0000803f0a140d",
+    "0000f03f1d68916d3d", "250000803f2d0000803f12050d0000a03f0a490a140d",
 
-    # Sharp low
-    "9a9909411d8fc2753d",
-    "250000803f2d0000803f0a140d",
-    "f6286c401d0ad7233d",
-    "250000803f2d0000803f0a140d",
-    "000010401d68916d3d",
-    "250000803f2d0000803f12050d000020400a490a140d",
+    "9a9909411d8fc2753d", "250000803f2d0000803f0a140d",
+    "f6286c401d0ad7233d", "250000803f2d0000803f0a140d",
+    "000010401d68916d3d", "250000803f2d0000803f12050d000020400a490a140d",
 
-    # Sharp med
-    "000020411d8fc2753d",
-    "250000803f2d0000803f0a140d",
-    "333387401d0ad7233d",
-    "250000803f2d0000803f0a140d",
-    "000020401d68916d3d",
-    "250000803f2d0000803f12050d0000a0400a490a140d",
+    "000020411d8fc2753d", "250000803f2d0000803f0a140d",
+    "333387401d0ad7233d", "250000803f2d0000803f0a140d",
+    "000020401d68916d3d", "250000803f2d0000803f12050d0000a0400a490a140d",
 
-    # Sharp high
-    "000020411d022b873d",
-    "250000803f2d0000803f0a140d",
-    "14ae77401d0ad7233d",
-    "250000803f2d0000803f0a140d",
-    "0ad793401d3480b73c",
-    "250000803f2d0000803f12050d000020410a490a140d",
+    "000020411d022b873d", "250000803f2d0000803f0a140d",
+    "14ae77401d0ad7233d", "250000803f2d0000803f0a140d",
+    "0ad793401d3480b73c", "250000803f2d0000803f12050d000020410a490a140d",
 
-    # Sharp very high
-    "cdcc34411dea95323d",
-    "250000803f2d0000803f0a140d",
-    "cdcc6c401d6f12033d",
-    "250000803f2d0000803f0a140d",
-    "333303401ded0dbe3c",
-    "250000803f2d0000803f12050d0000a0410a490a140d",
+    "cdcc34411dea95323d", "250000803f2d0000803f0a140d",
+    "cdcc6c401d6f12033d", "250000803f2d0000803f0a140d",
+    "333303401ded0dbe3c", "250000803f2d0000803f12050d0000a0410a490a140d",
 
-    # Sharp bento low
-    "000080411d77be9f3c",
-    "250000803f2d0000803f0a140d",
-    "666646401dc1caa13c",
-    "250000803f2d0000803f0a140d",
-    "85ebf13f1d0ad7a33c",
-    "250000803f2d0000803f12050d000020420a490a140d",
+    "000080411d77be9f3c", "250000803f2d0000803f0a140d",
+    "666646401dc1caa13c", "250000803f2d0000803f0a140d",
+    "85ebf13f1d0ad7a33c", "250000803f2d0000803f12050d000020420a490a140d",
 
-    # Sharp bento high
-    "000094411d728a8e3c",
-    "250000803f2d0000803f0a140d",
-    "cdcc2c401dbe30993c",
-    "250000803f2d0000803f0a140d",
-    "9a99d93f1d0ad7a33c",
-    "250000803f2d0000803f12050d0000a042000000"
+    "000094411d728a8e3c", "250000803f2d0000803f0a140d",
+    "cdcc2c401dbe30993c", "250000803f2d0000803f0a140d",
+    "9a99d93f1d0ad7a33c", "250000803f2d0000803f12050d0000a042000000"
 ]
 
 sharp_slices_main = {
@@ -113,79 +85,54 @@ def generate_sharp_hex(values_list, level_names, level_slices, start_header=True
 
 
 # --- LUMA HEX Data ---
-luma_original_lines = [
-    # Все блоки, начиная с уровня "very low"
-    "00000a610a0f0d",  # заголовок, не изменяется
-
+luma_original_blocks = [
     # Bayer luma denoise very low
-    "0000803f", "15", "cdcccc3d", "1d", "ae50223f", "0a0f0d",
+    ["0000803f", "15", "cdcccc3d", "1d", "ae50223f", "0a0f0d"],
     
     # Bayer luma denoise low
-    "6666663f", "15", "cdcccc3d", "1d", "95806d3e", "0a0f0d",
+    ["6666663f", "15", "cdcccc3d", "1d", "95806d3e", "0a0f0d"],
     
     # Bayer luma denoise med
-    "9a99593f", "15", "cdcc4c3d", "1d", "09997a3e", "0a0f0d",
+    ["9a99593f", "15", "cdcc4c3d", "1d", "09997a3e", "0a0f0d"],
     
     # Bayer luma denoise high
-    "cdcc4c3f", "15", "cdcc4c3d", "1d", "0e06743e", "0a0a0d",
+    ["cdcc4c3f", "15", "cdcc4c3d", "1d", "0e06743e", "0a0a0d"],
     
     # Bayer luma denoise very high
-    "0000403f", "1d", "68ceb13e", "12050d0000a0401dcdcccc3f250000003f0a610a0f0d",
+    ["0000403f", "1d", "68ceb13e", "12050d0000a0401dcdcccc3f250000003f0a610a0f0d"],
 
-    # Bayer luma denoise very low
-    "cdcc4c3f", "15", "cdcccc3d", "1d", "65a5113f", "0a0f0d",
+    # Sharp bento low
+    ["cdcc4c3f", "15", "cdcccc3d", "1d", "65a5113f", "0a0f0d"],
     
-    # Bayer luma denoise low
-    "3333333f", "15", "cdcccc3d", "1d", "5a469a3e", "0a0f0d",
-    
-    # Bayer luma denoise med
-    "3333333f", "15", "9a99993d", "1d", "6616913e", "0a0f0d",
-    
-    # Bayer luma denoise high
-    "9a99193f", "15", "0000803d", "1d", "f20bbf3e", "0a0a0d",
-    
-    # Bayer luma denoise very high
-    "0000003f", "1d", "d1ff143f", "12050d0000a0411dcdcccc3f250000003f0a610a0f0d",
+    # Sharp bento high
+    ["3333333f", "15", "cdcccc3d", "1d", "5a469a3e", "0a0f0d"],
 
-    # Bayer luma denoise very low
-    "3333333f", "15", "cdcccc3d", "1d", "14fa003f", "0a0f0d",
-    
-    # Bayer luma denoise low
-    "cdcc4c3f", "15", "cdcccc3d", "1d", "49ccbd3e", "0a0f0d",
-    
-    # Bayer luma denoise med
-    "9a99193f", "15", "cdcccc3d", "1d", "37e0a43e", "0a0f0d",
-    
-    # Bayer luma denoise high
-    "cdcccc3e", "15", "9a99993d", "1d", "7b0a023f", "0a0a0d",
-    
-    # Bayer luma denoise very high
-    "0000003f", "1d", "ffe6ed3e", "12050d000020411dcdcccc3f250000003f0a610a0f0d",
-
-    # Bayer luma denoise very low
-    "9a99193f", "15", "9a99193e", "1d", "1093243f", "0a0f0d",
-    
-    # Bayer luma denoise low
-    "0000003f", "15", "cdcccc3d", "1d", "d08a203f", "0a0f0d",
-    
-    # Bayer luma denoise med
-    "0000803e", "15", "cdcccc3d", "1d", "54eef13e", "0a0f0d",
-    
-    # Bayer luma denoise high
-    "0000803e", "15", "cdcccc3d", "1d", "93d7b93e", "0a0a0d",
-    
-    # Bayer luma denoise very high
-    "cdcc4c3e", "1d", "af3c9f3d", "12050d0000a0421dcdcccc3f250000003f0a610a0f0d"
+    ["3333333f", "15", "9a99993d", "1d", "6616913e", "0a0f0d"],
+    ["9a99193f", "15", "0000803d", "1d", "f20bbf3e", "0a0a0d"],
+    ["0000003f", "1d", "d1ff143f", "12050d0000a0411dcdcccc3f250000003f0a610a0f0d"],
+    ["3333333f", "15", "cdcccc3d", "1d", "14fa003f", "0a0f0d"],
+    ["cdcc4c3f", "15", "cdcccc3d", "1d", "49ccbd3e", "0a0f0d"],
+    ["9a99193f", "15", "cdcccc3d", "1d", "37e0a43e", "0a0f0d"],
+    ["cdcccc3e", "15", "9a99993d", "1d", "7b0a023f", "0a0a0d"],
+    ["0000003f", "1d", "ffe6ed3e", "12050d000020411dcdcccc3f250000003f0a610a0f0d"],
+    ["9a99193f", "15", "9a99193e", "1d", "1093243f", "0a0f0d"],
+    ["0000003f", "15", "cdcccc3d", "1d", "d08a203f", "0a0f0d"],
+    ["0000803e", "15", "cdcccc3d", "1d", "54eef13e", "0a0f0d"],
+    ["0000803e", "15", "cdcccc3d", "1d", "93d7b93e", "0a0a0d"],
+    ["cdcc4c3e", "1d", "af3c9f3d", "12050d0000a0421dcdcccc3f250000003f0a610a0f0d"]
 ]
 
 
 # --- Индексы уровней LUMA ---
-luma_slices = {
-    "Bayer luma denoise very low": (1, 7),     # 0000803f ... до ... 0a0f0d
-    "Bayer luma denoise low":      (7, 13),
-    "Bayer luma denoise med":      (13, 19),
-    "Bayer luma denoise high":     (19, 25),
-    "Bayer luma denoise very high":(25, 31)
+luma_level_positions = {
+    "Bayer luma denoise very low": 0,
+    "Bayer luma denoise low": 1,
+    "Bayer luma denoise med": 2,
+    "Bayer luma denoise high": 3,
+    "Bayer luma denoise very high": 4,
+
+    "Sharp bento low": 5,
+    "Sharp bento high": 6
 }
 
 
@@ -199,36 +146,45 @@ luma_levels = [
 ]
 
 
-# --- Генератор LUMA HEX ---
-def generate_luma_hex(values_list, level_slices):
+# --- Генератор LUMA HEX (исправлённый) ---
+def generate_luma_hex(values_list, block_templates, level_positions):
     lines = []
 
     for i, values in enumerate(values_list):
         l1, l1a, l1b, l2, l2a, l2b, l3, l3a, l3b, l4, l4a, l4b, l5, l5a = values
-        name = list(level_slices.keys())[i]
-        start, end = level_slices[name]
+        level_name = level_positions[i]["name"]
+        block_index = luma_level_positions[level_name]
 
-        modified_block = luma_original_lines[start:end]
+        # Берём оригинальный блок
+        modified_block = block_templates[block_index].copy()
 
-        # Замена значений по правильным позициям
-        modified_block[0] = float_to_hex(l1)   # L1
-        modified_block[2] = float_to_hex(l1a)  # L1A
-        modified_block[4] = float_to_hex(l1b)  # L1B
-        modified_block[6] = float_to_hex(l2)   # L2
-        modified_block[8] = float_to_hex(l2a)  # L2A
-        modified_block[10] = float_to_hex(l2b) # L2B
-        modified_block[12] = float_to_hex(l3)  # L3
-        modified_block[14] = float_to_hex(l3a) # L3A
-        modified_block[16] = float_to_hex(l3b) # L3B
-        modified_block[18] = float_to_hex(l4)  # L4
-        modified_block[20] = float_to_hex(l4a) # L4A
-        modified_block[22] = float_to_hex(l4b) # L4B
-        modified_block[24] = float_to_hex(l5)  # L5
-        modified_block[26] = float_to_hex(l5a) # L5A
+        # Замена значений по индексам внутри блока
+        modified_block[0] = float_to_hex(l1)
+        modified_block[2] = float_to_hex(l1a)
+        modified_block[4] = float_to_hex(l1b)
+
+        if len(modified_block) > 6:
+            modified_block[6] = float_to_hex(l2)
+            modified_block[8] = float_to_hex(l2a)
+            modified_block[10] = float_to_hex(l2b)
+
+        if len(modified_block) > 12:
+            modified_block[12] = float_to_hex(l3)
+            modified_block[14] = float_to_hex(l3a)
+            modified_block[16] = float_to_hex(l3b)
+
+        if len(modified_block) > 18:
+            modified_block[18] = float_to_hex(l4)
+            modified_block[20] = float_to_hex(l4a)
+            modified_block[22] = float_to_hex(l4b)
+
+        if len(modified_block) > 24:
+            modified_block[24] = float_to_hex(l5)
+            modified_block[26] = float_to_hex(l5a)
 
         lines.extend(modified_block)
 
-    full_hex = luma_original_lines[0] + "".join(lines)
+    full_hex = "".join(lines)
     return full_hex
 
 
@@ -237,7 +193,7 @@ st.set_page_config(page_title="HEX Sharp & Luma Config Generator", layout="wide"
 tab1, tab2 = st.tabs(["ImageSharp", "LUMA"])
 
 
-# === ВКЛАДКА SHARP ===
+# === SHARP TAB ===
 with tab1:
     st.title("🔧 Sharp Level HEX Code Generator")
 
@@ -246,54 +202,7 @@ with tab1:
         with st.expander(level["name"], expanded=True):
             cols = st.columns(3)
             l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"main_l1_{idx}")
-            l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"main_l1a_{idx}")
-            l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"main_l2_{idx}")
-            l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"main_l2a_{idx}")
-            l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"main_l3_{idx}")
-            l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"main_l3a_{idx}")
-            main_inputs.append([l1, l1a, l2, l2a, l3, l3a])
-
-    if st.button("🚀 Сгенерировать основной HEX"):
-        values_list = []
-        for vals in main_inputs:
-            values_list.append(vals)
-
-        full_hex = generate_sharp_hex(values_list, sharp_all_levels[:5], sharp_slices_main, start_header=True)
-        st.text_area("Сгенерированный HEX (основные уровни):", value=full_hex, height=300)
-        st.download_button(label="⬇️ Скачать main_output.hex", data=full_hex, file_name="main_output.hex")
-
-
-    st.markdown("### Bento уровни")
-    bento_inputs = []
-    for idx, level in enumerate(sharp_all_levels[5:], start=5):
-        with st.expander(level["name"], expanded=True):
-            cols = st.columns(3)
-            l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"bento_l1_{idx}")
-            l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"bento_l1a_{idx}")
-            l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"bento_l2_{idx}")
-            l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"bento_l2a_{idx}")
-            l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"bento_l3_{idx}")
-            l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"bento_l3a_{idx}")
-            bento_inputs.append([l1, l1a, l2, l2a, l3, l3a])
-
-    if st.button("🚀 Сгенерировать Bento HEX"):
-        values_list = []
-        for vals in bento_inputs:
-            values_list.append(vals)
-
-        full_hex = generate_sharp_hex(values_list, sharp_all_levels[5:], sharp_slices_bento, start_header=False)
-        st.text_area("Сгенерированный HEX (Bento):", value=full_hex, height=300)
-        st.download_button(label="⬇️ Скачать bento_output.hex", data=full_hex, file_name="bento_output.hex")
-
-
-# === ВКЛАДКА LUMA ===
-with tab2:
-    st.title("🔧 LUMA Level HEX Code Generator")
-
-    luma_inputs = []
-    for idx, level in enumerate(luma_levels):
-        with st.expander(level["name"], expanded=True):
-            cols = st.columns(3)
+            l1a = cols[1].number_input("L1A", value=level["name"]=="Sharp bento low", expanded=True):
             l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"luma_l1_{idx}")
             l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"luma_l1a_{idx}")
             l1b = cols[2].number_input("L1B", value=level["default"][2], format="%.4f", key=f"luma_l1b_{idx}")
@@ -316,6 +225,6 @@ with tab2:
             luma_inputs.append([l1, l1a, l1b, l2, l2a, l2b, l3, l3a, l3b, l4, l4a, l4b, l5, l5a])
 
     if st.button("🚀 Сгенерировать LUMA HEX"):
-        full_hex = generate_luma_hex(luma_inputs, luma_slices)
+        full_hex = generate_luma_hex(luma_inputs, luma_original_blocks, luma_levels)
         st.text_area("Сгенерированный HEX (LUMA):", value=full_hex, height=400)
         st.download_button(label="⬇️ Скачать luma_output.hex", data=full_hex, file_name="luma_output.hex")
