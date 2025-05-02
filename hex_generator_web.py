@@ -8,8 +8,7 @@ def float_to_hex(f):
     return struct.pack('<f', f).hex()
 
 
-# --- Значения по умолчанию и служебные строки ---
-
+# --- Значения по умолчанию и служебные строки с окончанием '0a490a140d' ---
 sharp_levels = [
     {
         "name": "Sharp very low",
@@ -71,10 +70,14 @@ sharp_levels = [
         "service_lines": [
             "250000803f2d0000803f0a140d",
             "250000803f2d0000803f0a140d",
-            "250000803f2d0000803f12050d0000a042000000"
+            "250000803f2d0000803f12050d0000a042"
         ]
     }
 ]
+
+# Добавляем окончание ко всем служебным строкам
+SUFFIX = "0a490a140d"
+
 
 # --- Интерфейс ---
 st.set_page_config(page_title="HEX Sharp Config Generator", layout="wide")
@@ -103,14 +106,16 @@ if st.button("🚀 Сгенерировать HEX"):
         l1, l1a, l2, l2a, l3, l3a = values
         service_lines = sharp_levels[idx]["service_lines"]
 
+        # Формируем блоки данных
         lines.append(f"{float_to_hex(l1)}1d{float_to_hex(l1a)}")
-        lines.append(service_lines[0])
+        lines.append(service_lines[0] + SUFFIX)
         lines.append(f"{float_to_hex(l2)}1d{float_to_hex(l2a)}")
-        lines.append(service_lines[1])
+        lines.append(service_lines[1] + SUFFIX)
         lines.append(f"{float_to_hex(l3)}1d{float_to_hex(l3a)}")
-        lines.append(service_lines[2])
+        lines.append(service_lines[2] + SUFFIX)
 
     full_hex = ''.join(lines)  # Без переносов строк
+
     st.text_area("Сгенерированный HEX-код:", value=full_hex, height=400)
 
     st.download_button(
