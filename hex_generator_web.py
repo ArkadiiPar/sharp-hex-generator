@@ -7,17 +7,15 @@ def float_to_hex(f):
     return struct.pack('<f', f).hex()
 
 
-# --- Все строки из оригинального сообщения ---
+# --- Все строки из оригинального сообщения (без дубликатов '0a490a140d') ---
 original_hex_lines = [
-    "0a490a140d",  # Только один раз в начале
-
     # Sharp very low
     "0000e0401d8fc2753d",
     "250000803f2d0000803f0a140d",
     "cdcc44401d0ad7233d",
     "250000803f2d0000803f0a140d",
     "0000f03f1d68916d3d",
-    "250000803f2d0000803f12050d0000a03f0a490a140d",
+    "250000803f2d0000803f12050d0000a03f",
 
     # Sharp low
     "9a9909411d8fc2753d",
@@ -25,7 +23,7 @@ original_hex_lines = [
     "f6286c401d0ad7233d",
     "250000803f2d0000803f0a140d",
     "000010401d68916d3d",
-    "250000803f2d0000803f12050d000020400a490a140d",
+    "250000803f2d0000803f12050d00002040",
 
     # Sharp med
     "000020411d8fc2753d",
@@ -33,7 +31,7 @@ original_hex_lines = [
     "333387401d0ad7233d",
     "250000803f2d0000803f0a140d",
     "000020401d68916d3d",
-    "250000803f2d0000803f12050d0000a0400a490a140d",
+    "250000803f2d0000803f12050d0000a040",
 
     # Sharp high
     "000020411d022b873d",
@@ -41,7 +39,7 @@ original_hex_lines = [
     "14ae77401d0ad7233d",
     "250000803f2d0000803f0a140d",
     "0ad793401d3480b73c",
-    "250000803f2d0000803f12050d000020410a490a140d",
+    "250000803f2d0000803f12050d00002041",
 
     # Sharp very high
     "cdcc34411dea95323d",
@@ -49,7 +47,7 @@ original_hex_lines = [
     "cdcc6c401d6f12033d",
     "250000803f2d0000803f0a140d",
     "333303401ded0dbe3c",
-    "250000803f2d0000803f12050d0000a0410a490a140d",
+    "250000803f2d0000803f12050d0000a041",
 
     # Sharp bento low
     "000080411d77be9f3c",
@@ -57,7 +55,7 @@ original_hex_lines = [
     "666646401dc1caa13c",
     "250000803f2d0000803f0a140d",
     "85ebf13f1d0ad7a33c",
-    "250000803f2d0000803f12050d000020420a490a140d",
+    "250000803f2d0000803f12050d00002042",
 
     # Sharp bento high
     "000094411d728a8e3c",
@@ -68,7 +66,7 @@ original_hex_lines = [
     "250000803f2d0000803f12050d0000a042000000"
 ]
 
-# --- Индексы для каждого уровня резкости ---
+# --- Индексы начала и конца для каждого уровня ---
 level_slices = {
     "Sharp very low": (0, 6),
     "Sharp low": (6, 12),
@@ -80,6 +78,7 @@ level_slices = {
 }
 
 # --- Значения по умолчанию ---
+
 sharp_levels = [
     {"name": "Sharp very low",  "default": [7.0, 0.060, 3.075, 0.040, 1.875, 0.058]},
     {"name": "Sharp low",       "default": [8.6, 0.060, 3.69, 0.040, 2.25, 0.058]},
@@ -94,7 +93,7 @@ sharp_levels = [
 st.set_page_config(page_title="HEX Sharp Config Generator", layout="wide")
 st.title("🔧 Sharp Level HEX Code Generator")
 
-st.markdown("Измените параметры ниже и получите готовый HEX-код в оригинальном формате.")
+st.markdown("Измените параметры ниже и получите готовый HEX-код.")
 
 all_inputs = []
 
@@ -110,18 +109,21 @@ for idx, level in enumerate(sharp_levels):
         all_inputs.append([l1, l1a, l2, l2a, l3, l3a])
 
 if st.button("🚀 Сгенерировать HEX"):
-    modified_lines = original_hex_lines.copy()
-    
+    lines = []
+
     for i, values in enumerate(all_inputs):
-        start = level_slices[sharp_levels[i]["name"]][0]
         l1, l1a, l2, l2a, l3, l3a = values
 
-        # Заменяем L1, L2, L3 в соответствующих позициях
-        modified_lines[start] = f"{float_to_hex(l1)}1d{float_to_hex(l1a)}"
-        modified_lines[start + 2] = f"{float_to_hex(l2)}1d{float_to_hex(l2a)}"
-        modified_lines[start + 4] = f"{float_to_hex(l3)}1d{float_to_hex(l3a)}"
+        start, end = level_slices[sharp_levels[i]["name"]]
 
-    full_hex = '\n'.join(modified_lines)
+        modified_block = original_hex_lines[start:end]
+        modified_block[0] = f"{float_to_hex(l1)}1d{float_to_hex(l1a)}"
+        modified_block[2] = f"{float_to_hex(l2)}1d{float_to_hex(l2a)}"
+        modified_block[4] = f"{float_to_hex(l3)}1d{float_to_hex(l3a)}"
+
+        lines.extend(modified_block)
+
+    full_hex = "0a490a140d\n" + "\n".join(lines)  # Добавляем заголовок один раз в начало
 
     st.text_area("Сгенерированный HEX-код:", value=full_hex, height=400)
 
