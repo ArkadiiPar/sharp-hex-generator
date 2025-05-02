@@ -9,7 +9,9 @@ def float_to_hex(f):
 
 # --- Все строки из оригинального сообщения ---
 original_hex_lines = [
-    "0a490a140d",  # Sharp very low
+    "0a490a140d",  # Только один раз в начале
+
+    # Sharp very low
     "0000e0401d8fc2753d",
     "250000803f2d0000803f0a140d",
     "cdcc44401d0ad7233d",
@@ -17,7 +19,7 @@ original_hex_lines = [
     "0000f03f1d68916d3d",
     "250000803f2d0000803f12050d0000a03f0a490a140d",
 
-    "0a490a140d",  # Sharp low
+    # Sharp low
     "9a9909411d8fc2753d",
     "250000803f2d0000803f0a140d",
     "f6286c401d0ad7233d",
@@ -25,7 +27,7 @@ original_hex_lines = [
     "000010401d68916d3d",
     "250000803f2d0000803f12050d000020400a490a140d",
 
-    "0a490a140d",  # Sharp med
+    # Sharp med
     "000020411d8fc2753d",
     "250000803f2d0000803f0a140d",
     "333387401d0ad7233d",
@@ -33,7 +35,7 @@ original_hex_lines = [
     "000020401d68916d3d",
     "250000803f2d0000803f12050d0000a0400a490a140d",
 
-    "0a490a140d",  # Sharp high
+    # Sharp high
     "000020411d022b873d",
     "250000803f2d0000803f0a140d",
     "14ae77401d0ad7233d",
@@ -41,7 +43,7 @@ original_hex_lines = [
     "0ad793401d3480b73c",
     "250000803f2d0000803f12050d000020410a490a140d",
 
-    "0a490a140d",  # Sharp very high
+    # Sharp very high
     "cdcc34411dea95323d",
     "250000803f2d0000803f0a140d",
     "cdcc6c401d6f12033d",
@@ -49,7 +51,7 @@ original_hex_lines = [
     "333303401ded0dbe3c",
     "250000803f2d0000803f12050d0000a0410a490a140d",
 
-    "0a490a140d",  # Sharp bento low
+    # Sharp bento low
     "000080411d77be9f3c",
     "250000803f2d0000803f0a140d",
     "666646401dc1caa13c",
@@ -57,7 +59,7 @@ original_hex_lines = [
     "85ebf13f1d0ad7a33c",
     "250000803f2d0000803f12050d000020420a490a140d",
 
-    "0a490a140d",  # Sharp bento high
+    # Sharp bento high
     "000094411d728a8e3c",
     "250000803f2d0000803f0a140d",
     "cdcc2c401dbe30993c",
@@ -66,19 +68,18 @@ original_hex_lines = [
     "250000803f2d0000803f12050d0000a042000000"
 ]
 
-# --- Индексы начала и конца для каждого уровня ---
+# --- Индексы для каждого уровня резкости ---
 level_slices = {
-    "Sharp very low": (0, 7),
-    "Sharp low": (7, 14),
-    "Sharp med": (14, 21),
-    "Sharp high": (21, 28),
-    "Sharp very high": (28, 35),
-    "Sharp bento low": (35, 42),
-    "Sharp bento high": (42, 49)
+    "Sharp very low": (0, 6),
+    "Sharp low": (6, 12),
+    "Sharp med": (12, 18),
+    "Sharp high": (18, 24),
+    "Sharp very high": (24, 30),
+    "Sharp bento low": (30, 36),
+    "Sharp bento high": (36, 42)
 }
 
 # --- Значения по умолчанию ---
-
 sharp_levels = [
     {"name": "Sharp very low",  "default": [7.0, 0.060, 3.075, 0.040, 1.875, 0.058]},
     {"name": "Sharp low",       "default": [8.6, 0.060, 3.69, 0.040, 2.25, 0.058]},
@@ -93,7 +94,7 @@ sharp_levels = [
 st.set_page_config(page_title="HEX Sharp Config Generator", layout="wide")
 st.title("🔧 Sharp Level HEX Code Generator")
 
-st.markdown("Измените параметры ниже и получите готовый HEX-код.")
+st.markdown("Измените параметры ниже и получите готовый HEX-код в оригинальном формате.")
 
 all_inputs = []
 
@@ -109,21 +110,18 @@ for idx, level in enumerate(sharp_levels):
         all_inputs.append([l1, l1a, l2, l2a, l3, l3a])
 
 if st.button("🚀 Сгенерировать HEX"):
-    lines = []
-
+    modified_lines = original_hex_lines.copy()
+    
     for i, values in enumerate(all_inputs):
+        start = level_slices[sharp_levels[i]["name"]][0]
         l1, l1a, l2, l2a, l3, l3a = values
 
-        start, end = level_slices[sharp_levels[i]["name"]]
+        # Заменяем L1, L2, L3 в соответствующих позициях
+        modified_lines[start] = f"{float_to_hex(l1)}1d{float_to_hex(l1a)}"
+        modified_lines[start + 2] = f"{float_to_hex(l2)}1d{float_to_hex(l2a)}"
+        modified_lines[start + 4] = f"{float_to_hex(l3)}1d{float_to_hex(l3a)}"
 
-        modified_block = original_hex_lines[start:end]
-        modified_block[1] = f"{float_to_hex(l1)}1d{float_to_hex(l1a)}"
-        modified_block[3] = f"{float_to_hex(l2)}1d{float_to_hex(l2a)}"
-        modified_block[5] = f"{float_to_hex(l3)}1d{float_to_hex(l3a)}"
-
-        lines.extend(modified_block)
-
-    full_hex = '\n'.join(lines)
+    full_hex = '\n'.join(modified_lines)
 
     st.text_area("Сгенерированный HEX-код:", value=full_hex, height=400)
 
