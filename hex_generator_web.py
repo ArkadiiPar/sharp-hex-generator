@@ -66,6 +66,7 @@ sharp_hex_lines = [
     "250000803f2d0000803f12050d0000a042000000"
 ]
 
+# --- Индексы для Sharp ---
 sharp_slices_main = {
     "Sharp very low": (0, 6),
     "Sharp low": (6, 12),
@@ -114,37 +115,21 @@ def generate_sharp_hex(values_list, level_names, level_slices, start_header=True
 
 # --- LUMA HEX Data ---
 luma_original_blocks = [
+    # Bayer luma denoise very low
     ["0000803f", "15", "cdcccc3d", "1d", "ae50223f", "0a0f0d"],
+    
+    # Bayer luma denoise low
     ["6666663f", "15", "cdcccc3d", "1d", "95806d3e", "0a0f0d"],
+    
+    # Bayer luma denoise med
     ["9a99593f", "15", "cdcc4c3d", "1d", "09997a3e", "0a0f0d"],
+    
+    # Bayer luma denoise high
     ["cdcc4c3f", "15", "cdcc4c3d", "1d", "0e06743e", "0a0a0d"],
-    ["0000403f", "1d", "68ceb13e", "12050d0000a0401dcdcccc3f250000003f0a610a0f0d"],
-    ["cdcc4c3f", "15", "cdcccc3d", "1d", "65a5113f", "0a0f0d"],
-    ["3333333f", "15", "cdcccc3d", "1d", "5a469a3e", "0a0f0d"],
-    ["3333333f", "15", "9a99993d", "1d", "6616913e", "0a0f0d"],
-    ["9a99193f", "15", "0000803d", "1d", "f20bbf3e", "0a0a0d"],
-    ["0000003f", "1d", "d1ff143f", "12050d0000a0411dcdcccc3f250000003f0a610a0f0d"],
-    ["3333333f", "15", "cdcccc3d", "1d", "14fa003f", "0a0f0d"],
-    ["cdcc4c3f", "15", "cdcccc3d", "1d", "49ccbd3e", "0a0f0d"],
-    ["9a99193f", "15", "cdcccc3d", "1d", "37e0a43e", "0a0f0d"],
-    ["cdcccc3e", "15", "9a99993d", "1d", "7b0a023f", "0a0a0d"],
-    ["0000003f", "1d", "ffe6ed3e", "12050d000020411dcdcccc3f250000003f0a610a0f0d"],
-    ["9a99193f", "15", "9a99193e", "1d", "1093243f", "0a0f0d"],
-    ["0000003f", "15", "cdcccc3d", "1d", "d08a203f", "0a0f0d"],
-    ["0000803e", "15", "cdcccc3d", "1d", "54eef13e", "0a0f0d"],
-    ["0000803e", "15", "cdcccc3d", "1d", "93d7b93e", "0a0a0d"],
-    ["cdcc4c3e", "1d", "af3c9f3d", "12050d0000a0421dcdcccc3f250000003f0a610a0f0d"]
+    
+    # Bayer luma denoise very high
+    ["0000403f", "1d", "68ceb13e", "12050d0000a0401dcdcccc3f250000003f0a610a0f0d"]
 ]
-
-
-# --- Индексы уровней LUMA ---
-luma_level_positions = {
-    "Bayer luma denoise very low": 0,
-    "Bayer luma denoise low": 1,
-    "Bayer luma denoise med": 2,
-    "Bayer luma denoise high": 3,
-    "Bayer luma denoise very high": 4
-}
 
 
 # --- Уровни LUMA с дефолтными значениями ---
@@ -158,54 +143,45 @@ luma_levels = [
 
 
 # --- Генератор LUMA HEX ---
-def generate_luma_hex(values_list, block_templates, level_positions):
+def generate_luma_hex(values_list):
     lines = []
 
     for i, values in enumerate(values_list):
-        # Получаем имя уровня из luma_levels
-        level_name = luma_levels[i]["name"]
-        
-        # Получаем шаблон блока
-        block_index = level_positions[level_name]
-        modified_block = block_templates[block_index].copy()
+        l1, l1a, l1b, l2, l2a, l2b, l3, l3a, l3b, l4, l4a, l4b, l5, l5a = values
+        block = luma_original_blocks[i].copy()
 
-        # Замена значений по индексам внутри блока
-        if len(modified_block) > 0:
-            modified_block[0] = float_to_hex(values[0])   # L1
-        if len(modified_block) > 2:
-            modified_block[2] = float_to_hex(values[1])  # L1A
-        if len(modified_block) > 4:
-            modified_block[4] = float_to_hex(values[2])  # L1B
+        if len(block) > 0:
+            block[0] = float_to_hex(l1)
+        if len(block) > 2:
+            block[2] = float_to_hex(l1a)
+        if len(block) > 4:
+            block[4] = float_to_hex(l1b)
+        if len(block) > 6:
+            block[6] = float_to_hex(l2)
+        if len(block) > 8:
+            block[8] = float_to_hex(l2a)
+        if len(block) > 10:
+            block[10] = float_to_hex(l2b)
+        if len(block) > 12:
+            block[12] = float_to_hex(l3)
+        if len(block) > 14:
+            block[14] = float_to_hex(l3a)
+        if len(block) > 16:
+            block[16] = float_to_hex(l3b)
+        if len(block) > 18:
+            block[18] = float_to_hex(l4)
+        if len(block) > 20:
+            block[20] = float_to_hex(l4a)
+        if len(block) > 22:
+            block[22] = float_to_hex(l4b)
+        if len(block) > 24:
+            block[24] = float_to_hex(l5)
+        if len(block) > 26:
+            block[26] = float_to_hex(l5a)
 
-        if len(modified_block) > 6:
-            modified_block[6] = float_to_hex(values[3])  # L2
-        if len(modified_block) > 8:
-            modified_block[8] = float_to_hex(values[4])  # L2A
-        if len(modified_block) > 10:
-            modified_block[10] = float_to_hex(values[5]) # L2B
+        lines.extend(block)
 
-        if len(modified_block) > 12:
-            modified_block[12] = float_to_hex(values[6])  # L3
-        if len(modified_block) > 14:
-            modified_block[14] = float_to_hex(values[7]) # L3A
-        if len(modified_block) > 16:
-            modified_block[16] = float_to_hex(values[8]) # L3B
-
-        if len(modified_block) > 18:
-            modified_block[18] = float_to_hex(values[9])  # L4
-        if len(modified_block) > 20:
-            modified_block[20] = float_to_hex(values[10]) # L4A
-        if len(modified_block) > 22:
-            modified_block[22] = float_to_hex(values[11]) # L4B
-
-        if len(modified_block) > 24:
-            modified_block[24] = float_to_hex(values[12]) # L5
-        if len(modified_block) > 26:
-            modified_block[26] = float_to_hex(values[13]) # L5A
-
-        lines.extend(modified_block)
-
-    full_hex = "".join(lines)
+    full_hex = "00000a610a0f0d" + "".join(lines)
     return full_hex
 
 
@@ -284,7 +260,8 @@ with tab2:
 
             luma_inputs.append([l1, l1a, l1b, l2, l2a, l2b, l3, l3a, l3b, l4, l4a, l4b, l5, l5a])
 
+
     if st.button("🚀 Сгенерировать LUMA HEX"):
-        full_hex = generate_luma_hex(luma_inputs, luma_original_blocks, luma_level_positions)
+        full_hex = generate_luma_hex(luma_inputs)
         st.text_area("Сгенерированный HEX (LUMA):", value=full_hex, height=400)
         st.download_button(label="⬇️ Скачать luma_output.hex", data=full_hex, file_name="luma_output.hex")
