@@ -113,7 +113,7 @@ def generate_sharp_hex(values_list, level_names, level_slices, start_header=True
     return full_hex
 
 
-# --- LUMA HEX Data ---
+# --- LUMA HEX Data (все строки, как в оригинале) ---
 luma_original_blocks = [
     # Bayer luma denoise very low
     ["0000803f", "15", "cdcccc3d", "1d", "ae50223f", "0a0f0d"],
@@ -131,7 +131,6 @@ luma_original_blocks = [
     ["0000403f", "1d", "68ceb13e", "12050d0000a0401dcdcccc3f250000003f0a610a0f0d"]
 ]
 
-
 # --- Уровни LUMA с дефолтными значениями ---
 luma_levels = [
     {"name": "Bayer luma denoise very low", "default": [1.00, 0.10, 0.634044, 0.90, 0.10, 0.231936, 0.85, 0.05, 0.244724, 0.80, 0.05, 0.238304, 0.75, 0.347278]},
@@ -142,7 +141,7 @@ luma_levels = [
 ]
 
 
-# --- Генератор LUMA HEX ---
+# --- Генератор LUMA HEX (полностью соответствует оригиналу) ---
 def generate_luma_hex(values_list):
     lines = []
 
@@ -150,6 +149,7 @@ def generate_luma_hex(values_list):
         l1, l1a, l1b, l2, l2a, l2b, l3, l3a, l3b, l4, l4a, l4b, l5, l5a = values
         block = luma_original_blocks[i].copy()
 
+        # Замена только тех значений, которые существуют в блоке
         if len(block) > 0:
             block[0] = float_to_hex(l1)
         if len(block) > 2:
