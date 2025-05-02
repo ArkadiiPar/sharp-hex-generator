@@ -202,7 +202,7 @@ with tab1:
         with st.expander(level["name"], expanded=True):
             cols = st.columns(3)
             l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"main_l1_{idx}")
-            l1a = cols[1].number_input("L1A", value=level["name"]=="Sharp bento low", expanded=True):
+            l1a = cols[1].number_input("L1A", value=level["name"]=="Sharp bento low", expanded=True)
             l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"luma_l1_{idx}")
             l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"luma_l1a_{idx}")
             l1b = cols[2].number_input("L1B", value=level["default"][2], format="%.4f", key=f"luma_l1b_{idx}")
