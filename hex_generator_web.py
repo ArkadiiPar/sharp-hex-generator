@@ -117,29 +117,29 @@ def generate_sharp_hex(values_list, level_names, level_slices, start_header=True
 # --- LUMA HEX Data ---
 luma_original_lines = [
     "00000a610a0f0d",  # ← заголовок всего LUMA-блока
-    
-    # Bayer luma denoise very low
+
+    # Bayer luma denoise very low — 14 строк
     "0000803f", "15", "cdcccc3d", "1d", "ae50223f", "0a0f0d",
     "6666663f", "15", "cdcccc3d", "1d", "95806d3e", "0a0f0d",
     "9a99593f", "15", "cdcc4c3d", "1d", "09997a3e", "0a0f0d",
     "cdcc4c3f", "15", "cdcc4c3d", "1d", "0e06743e", "0a0a0d",
     "0000403f", "1d", "68ceb13e", "12050d0000a0401dcdcccc3f250000003f0a610a0f0d",
-    
-    # Bayer luma denoise low
+
+    # Bayer luma denoise low — 14 строк
     "cdcc4c3f", "15", "cdcccc3d", "1d", "65a5113f", "0a0f0d",
     "3333333f", "15", "cdcccc3d", "1d", "5a469a3e", "0a0f0d",
     "3333333f", "15", "9a99993d", "1d", "6616913e", "0a0f0d",
     "9a99193f", "15", "0000803d", "1d", "f20bbf3e", "0a0a0d",
     "3333333f", "1d", "ffe6ed3e", "12050d000020411dcdcccc3f250000003f0a610a0f0d",
-    
-    # Bayer luma denoise med
+
+    # Bayer luma denoise med — 14 строк
     "3333333f", "15", "cdcccc3d", "1d", "14fa003f", "0a0f0d",
     "cdcc4c3f", "15", "cdcccc3d", "1d", "49ccbd3e", "0a0f0d",
     "9a99193f", "15", "cdcccc3d", "1d", "37e0a43e", "0a0f0d",
     "cdcccc3e", "15", "9a99993d", "1d", "7b0a023f", "0a0a0d",
     "0000003f", "1d", "d1ff143f", "12050d0000a0411dcdcccc3f250000003f0a610a0f0d",
-    
-    # Bayer luma denoise high
+
+    # Bayer luma denoise high — 14 строк
     "9a99193f", "15", "9a99193e", "1d", "1093243f", "0a0f0d",
     "0000003f", "15", "cdcccc3d", "1d", "d08a203f", "0a0f0d",
     "0000803e", "15", "cdcccc3d", "1d", "54eef13e", "0a0f0d",
@@ -149,11 +149,11 @@ luma_original_lines = [
 
 # --- Срезы для LUMA уровней ---
 luma_slices = {
-    "Bayer luma denoise very low": (1, 14),     # 1–13
-    "Bayer luma denoise low":      (14, 27),    # 14–26
-    "Bayer luma denoise med":      (27, 40),    # 27–39
-    "Bayer luma denoise high":     (40, 53),    # 40–52
-    "Bayer luma denoise very high": (53, 66)    # 53–65
+    "Bayer luma denoise very low": (1, 15),     # 1–14
+    "Bayer luma denoise low":      (15, 29),    # 15–28
+    "Bayer luma denoise med":      (29, 43),    # 29–42
+    "Bayer luma denoise high":     (43, 57),    # 43–56
+    "Bayer luma denoise very high": (57, 71)    # 57–70
 }
 
 # --- Параметры по умолчанию для LUMA ---
@@ -177,25 +177,25 @@ def generate_luma_hex(values_list, level_names, level_slices):
 
         modified_block = luma_original_lines[start:end]
 
-        # Обновляем нужные позиции
+        # Замена только нужных значений
         modified_block[0] = float_to_hex(l1)     # L1
-        modified_block[2] = float_to_hex(l1a)     # L1A
-        modified_block[4] = float_to_hex(l1b)     # L1B
+        modified_block[2] = float_to_hex(l1a)    # L1A
+        modified_block[4] = float_to_hex(l1b)    # L1B
 
         modified_block[6] = float_to_hex(l2)     # L2
-        modified_block[8] = float_to_hex(l2a)   # L2A
-        modified_block[10] = float_to_hex(l2b)  # L2B
+        modified_block[8] = float_to_hex(l2a)    # L2A
+        modified_block[10] = float_to_hex(l2b)   # L2B
 
-        modified_block[12] = float_to_hex(l3)  # L3
-        modified_block[14] = float_to_hex(l3a) # L3A
-        modified_block[16] = float_to_hex(l3b) # L3B
+        modified_block[12] = float_to_hex(l3)   # L3
+        modified_block[14] = float_to_hex(l3a)  # L3A
+        modified_block[16] = float_to_hex(l3b)  # L3B
 
-        modified_block[18] = float_to_hex(l4)  # L4
-        modified_block[20] = float_to_hex(l4a) # L4A
-        modified_block[22] = float_to_hex(l4b) # L4B
+        modified_block[18] = float_to_hex(l4)   # L4
+        modified_block[20] = float_to_hex(l4a)  # L4A
+        modified_block[22] = float_to_hex(l4b)  # L4B
 
         modified_block[24] = float_to_hex(l5)  # L5
-        modified_block[26] = float_to_hex(l5a) # L5A
+        modified_block[26] = float_to_hex(l5a)  # L5A
 
         lines.extend(modified_block)
 
@@ -209,7 +209,7 @@ st.set_page_config(page_title="HEX Sharp & Luma Config Generator", layout="wide"
 tab1, tab2 = st.tabs(["ImageSharp", "LUMA"])
 
 
-# --- Вкладка: Sharp ---
+# --- Вкладка Sharp ---
 with tab1:
     st.title("🔧 Sharp Level HEX Code Generator")
 
@@ -256,7 +256,7 @@ with tab1:
         st.download_button(label="⬇️ Скачать bento_output.hex", data=full_hex, file_name="bento_output.hex")
 
 
-# --- Вкладка: LUMA ---
+# --- Вкладка LUMA ---
 with tab2:
     st.title("🔧 LUMA Level HEX Code Generator")
 
