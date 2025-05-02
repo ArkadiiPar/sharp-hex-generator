@@ -14,6 +14,14 @@ def hex_to_float(hex_str):
         return 0.0
 
 
+def is_valid_hex(hex_string):
+    """Проверяет, является ли строка валидным HEX"""
+    hex_string = hex_string.strip().replace(" ", "").lower()
+    if not all(c in "0123456789abcdef" for c in hex_string):
+        return False, "HEX содержит недопустимые символы"
+    return True, hex_string
+
+
 # --- Все строки из оригинального сообщения ---
 original_hex_lines = [
     # Sharp very low
@@ -132,12 +140,16 @@ def generate_hex(values_list, level_names, level_slices, start_header=True):
 
 # --- Парсеры ---
 def parse_full_hex(hex_string):
-    hex_string = hex_string.strip()
+    valid, result = is_valid_hex(hex_string)
+    if not valid:
+        return None
+
+    hex_string = result
     if hex_string.startswith("0a490a140d"):
         hex_string = hex_string[10:]
+
     parsed = []
-    idx = 0
-    for level in main_levels + bento_levels:
+    for idx, level in enumerate(main_levels + bento_levels):
         name = level["name"]
         if name in level_slices_main:
             start, end = level_slices_main[name]
@@ -146,20 +158,25 @@ def parse_full_hex(hex_string):
         else:
             continue
 
-        block_size = end - start
         block_data = []
-
-        for i in range(block_size):
+        for i in range(start, end):
             line = hex_string[i*16:i*16+16]
-            if not line:
-                break
+            if len(line) != 16:
+                st.warning(f"⚠️ Строка уровня '{name}' слишком короткая")
+                block_data.append((0.0, 0.0))
+                continue
 
             parts = line.split("1d")
             if len(parts) == 2:
-                l = hex_to_float(parts[0])
-                la = hex_to_float(parts[1][:8])
-                block_data.append((l, la))
+                try:
+                    l = hex_to_float(parts[0])
+                    la = hex_to_float(parts[1][:8])
+                    block_data.append((l, la))
+                except Exception as e:
+                    st.warning(f"⚠️ Ошибка в уровне '{name}': {str(e)}")
+                    block_data.append((0.0, 0.0))
             else:
+                st.warning(f"⚠️ Нет разделителя '1d' в уровне '{name}'")
                 block_data.append((0.0, 0.0))
 
         if len(block_data) >= 3:
@@ -174,27 +191,38 @@ def parse_full_hex(hex_string):
 
 
 def parse_sharp_only(hex_string):
-    hex_string = hex_string.strip()
+    valid, result = is_valid_hex(hex_string)
+    if not valid:
+        return None
+
+    hex_string = result
     if hex_string.startswith("0a490a140d"):
         hex_string = hex_string[10:]
 
     parsed = []
-    for level in main_levels:
+    for idx, level in enumerate(main_levels):
         name = level["name"]
         start, end = level_slices_main[name]
         block_data = []
 
         for i in range(start, end):
             line = hex_string[i*16:i*16+16]
-            if not line:
-                break
+            if len(line) != 16:
+                st.warning(f"⚠️ Строка уровня '{name}' слишком короткая")
+                block_data.append((0.0, 0.0))
+                continue
 
             parts = line.split("1d")
             if len(parts) == 2:
-                l = hex_to_float(parts[0])
-                la = hex_to_float(parts[1][:8])
-                block_data.append((l, la))
+                try:
+                    l = hex_to_float(parts[0])
+                    la = hex_to_float(parts[1][:8])
+                    block_data.append((l, la))
+                except Exception as e:
+                    st.warning(f"⚠️ Ошибка в уровне '{name}': {str(e)}")
+                    block_data.append((0.0, 0.0))
             else:
+                st.warning(f"⚠️ Нет разделителя '1d' в уровне '{name}'")
                 block_data.append((0.0, 0.0))
 
         if len(block_data) >= 3:
@@ -209,24 +237,36 @@ def parse_sharp_only(hex_string):
 
 
 def parse_bento_only(hex_string):
-    hex_string = hex_string.strip()
+    valid, result = is_valid_hex(hex_string)
+    if not valid:
+        return None
+
+    hex_string = result
+
     parsed = []
-    for level in bento_levels:
+    for idx, level in enumerate(bento_levels):
         name = level["name"]
         start, end = level_slices_bento[name]
         block_data = []
 
         for i in range(start, end):
             line = hex_string[i*16:i*16+16]
-            if not line:
-                break
+            if len(line) != 16:
+                st.warning(f"⚠️ Строка уровня '{name}' слишком короткая")
+                block_data.append((0.0, 0.0))
+                continue
 
             parts = line.split("1d")
             if len(parts) == 2:
-                l = hex_to_float(parts[0])
-                la = hex_to_float(parts[1][:8])
-                block_data.append((l, la))
+                try:
+                    l = hex_to_float(parts[0])
+                    la = hex_to_float(parts[1][:8])
+                    block_data.append((l, la))
+                except Exception as e:
+                    st.warning(f"⚠️ Ошибка в уровне '{name}': {str(e)}")
+                    block_data.append((0.0, 0.0))
             else:
+                st.warning(f"⚠️ Нет разделителя '1d' в уровне '{name}'")
                 block_data.append((0.0, 0.0))
 
         if len(block_data) >= 3:
@@ -244,10 +284,11 @@ def parse_bento_only(hex_string):
 st.set_page_config(page_title="HEX Sharp Config Generator", layout="wide")
 st.title("🔧 Sharp Level HEX Code Generator + Парсер")
 
+
+# --- ГЕНЕРАТОР ---
 tab1, tab2 = st.tabs(["🛠️ Генератор", "📄 Парсер"])
 
 
-# --- ГЕНЕРАТОР ---
 with tab1:
     st.markdown("### 🧱 Генератор 1: Основные уровни резкости")
 
@@ -255,12 +296,12 @@ with tab1:
     for idx, level in enumerate(main_levels):
         with st.expander(level["name"], expanded=True):
             cols = st.columns(3)
-            l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"main_l1_{idx}")
-            l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"main_l1a_{idx}")
-            l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"main_l2_{idx}")
-            l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"main_l2a_{idx}")
-            l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"main_l3_{idx}")
-            l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"main_l3a_{idx}")
+            l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"gen_main_l1_{idx}")
+            l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"gen_main_l1a_{idx}")
+            l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"gen_main_l2_{idx}")
+            l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"gen_main_l2a_{idx}")
+            l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"gen_main_l3_{idx}")
+            l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"gen_main_l3a_{idx}")
             main_inputs.append([l1, l1a, l2, l2a, l3, l3a])
 
     if st.button("🚀 Сгенерировать основной HEX"):
@@ -275,12 +316,12 @@ with tab1:
     for idx, level in enumerate(bento_levels):
         with st.expander(level["name"], expanded=True):
             cols = st.columns(3)
-            l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"bento_l1_{idx}")
-            l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"bento_l1a_{idx}")
-            l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"bento_l2_{idx}")
-            l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"bento_l2a_{idx}")
-            l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"bento_l3_{idx}")
-            l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"bento_l3a_{idx}")
+            l1 = cols[0].number_input("L1", value=level["default"][0], format="%.4f", key=f"gen_bento_l1_{idx}")
+            l1a = cols[1].number_input("L1A", value=level["default"][1], format="%.4f", key=f"gen_bento_l1a_{idx}")
+            l2 = cols[0].number_input("L2", value=level["default"][2], format="%.4f", key=f"gen_bento_l2_{idx}")
+            l2a = cols[1].number_input("L2A", value=level["default"][3], format="%.4f", key=f"gen_bento_l2a_{idx}")
+            l3 = cols[0].number_input("L3", value=level["default"][4], format="%.4f", key=f"gen_bento_l3_{idx}")
+            l3a = cols[1].number_input("L3A", value=level["default"][5], format="%.4f", key=f"gen_bento_l3a_{idx}")
             bento_inputs.append([l1, l1a, l2, l2a, l3, l3a])
 
     if st.button("🚀 Сгенерировать Bento HEX"):
@@ -295,7 +336,10 @@ with tab2:
     full_hex_input = st.text_area("Введите полный HEX:", key="full_parser", height=200)
     if st.button("🔍 Распарсить полный HEX"):
         parsed = parse_full_hex(full_hex_input)
-        st.session_state.parsed_full = parsed
+        if parsed and len(parsed) > 0:
+            st.session_state.parsed_full = parsed
+        else:
+            st.session_state.parsed_full = None
 
     if "parsed_full" in st.session_state:
         inputs = st.session_state.parsed_full
@@ -303,15 +347,15 @@ with tab2:
         for idx, level in enumerate(all_levels):
             with st.expander(level["name"], expanded=True):
                 cols = st.columns(3)
-                l1 = cols[0].number_input("L1", value=inputs[idx][0], format="%.4f", key=f"full_l1_{idx}")
-                l1a = cols[1].number_input("L1A", value=inputs[idx][1], format="%.4f", key=f"full_l1a_{idx}")
-                l2 = cols[0].number_input("L2", value=inputs[idx][2], format="%.4f", key=f"full_l2_{idx}")
-                l2a = cols[1].number_input("L2A", value=inputs[idx][3], format="%.4f", key=f"full_l2a_{idx}")
-                l3 = cols[0].number_input("L3", value=inputs[idx][4], format="%.4f", key=f"full_l3_{idx}")
-                l3a = cols[1].number_input("L3A", value=inputs[idx][5], format="%.4f", key=f"full_l3a_{idx}")
+                l1 = cols[0].number_input("L1", value=inputs[idx][0], format="%.4f", key=f"parse_full_l1_{idx}")
+                l1a = cols[1].number_input("L1A", value=inputs[idx][1], format="%.4f", key=f"parse_full_l1a_{idx}")
+                l2 = cols[0].number_input("L2", value=inputs[idx][2], format="%.4f", key=f"parse_full_l2_{idx}")
+                l2a = cols[1].number_input("L2A", value=inputs[idx][3], format="%.4f", key=f"parse_full_l2a_{idx}")
+                l3 = cols[0].number_input("L3", value=inputs[idx][4], format="%.4f", key=f"parse_full_l3_{idx}")
+                l3a = cols[1].number_input("L3A", value=inputs[idx][5], format="%.4f", key=f"parse_full_l3a_{idx}")
                 edited_inputs.append([l1, l1a, l2, l2a, l3, l3a])
 
-        if st.button("💾 Сохранить как полный HEX"):
+        if st.button("💾 Сохранить как полный HEX", key="save_full_hex"):
             full_hex = generate_hex(edited_inputs, all_levels, {**level_slices_main, **level_slices_bento}, start_header=True)
             st.text_area("Обновлённый HEX:", value=full_hex, height=300)
             st.download_button(label="⬇️ Скачать updated_full.hex", data=full_hex, file_name="updated_full.hex")
@@ -320,9 +364,12 @@ with tab2:
     st.markdown("---")
     st.markdown("### 🔎 2. Парсер только Sharp-уровней")
     sharp_hex_input = st.text_area("Введите HEX только для Sharp-уровней:", key="sharp_parser", height=200)
-    if st.button("🔍 Распарсить Sharp HEX"):
+    if st.button("🔍 Распарсить Sharp HEX", key="parse_sharp"):
         parsed = parse_sharp_only(sharp_hex_input)
-        st.session_state.parsed_sharp = parsed
+        if parsed and len(parsed) > 0:
+            st.session_state.parsed_sharp = parsed
+        else:
+            st.session_state.parsed_sharp = None
 
     if "parsed_sharp" in st.session_state:
         inputs = st.session_state.parsed_sharp
@@ -330,15 +377,15 @@ with tab2:
         for idx, level in enumerate(main_levels):
             with st.expander(level["name"], expanded=True):
                 cols = st.columns(3)
-                l1 = cols[0].number_input("L1", value=inputs[idx][0], format="%.4f", key=f"sharp_l1_{idx}")
-                l1a = cols[1].number_input("L1A", value=inputs[idx][1], format="%.4f", key=f"sharp_l1a_{idx}")
-                l2 = cols[0].number_input("L2", value=inputs[idx][2], format="%.4f", key=f"sharp_l2_{idx}")
-                l2a = cols[1].number_input("L2A", value=inputs[idx][3], format="%.4f", key=f"sharp_l2a_{idx}")
-                l3 = cols[0].number_input("L3", value=inputs[idx][4], format="%.4f", key=f"sharp_l3_{idx}")
-                l3a = cols[1].number_input("L3A", value=inputs[idx][5], format="%.4f", key=f"sharp_l3a_{idx}")
+                l1 = cols[0].number_input("L1", value=inputs[idx][0], format="%.4f", key=f"parse_sharp_l1_{idx}")
+                l1a = cols[1].number_input("L1A", value=inputs[idx][1], format="%.4f", key=f"parse_sharp_l1a_{idx}")
+                l2 = cols[0].number_input("L2", value=inputs[idx][2], format="%.4f", key=f"parse_sharp_l2_{idx}")
+                l2a = cols[1].number_input("L2A", value=inputs[idx][3], format="%.4f", key=f"parse_sharp_l2a_{idx}")
+                l3 = cols[0].number_input("L3", value=inputs[idx][4], format="%.4f", key=f"parse_sharp_l3_{idx}")
+                l3a = cols[1].number_input("L3A", value=inputs[idx][5], format="%.4f", key=f"parse_sharp_l3a_{idx}")
                 edited_inputs.append([l1, l1a, l2, l2a, l3, l3a])
 
-        if st.button("💾 Сохранить как Sharp HEX"):
+        if st.button("💾 Сохранить как Sharp HEX", key="save_sharp_hex"):
             full_hex = generate_hex(edited_inputs, main_levels, level_slices_main, start_header=True)
             st.text_area("Обновлённый HEX (Sharp):", value=full_hex, height=300)
             st.download_button(label="⬇️ sharp_updated.hex", data=full_hex, file_name="sharp_updated.hex")
@@ -347,9 +394,12 @@ with tab2:
     st.markdown("---")
     st.markdown("### 🔍 3. Парсер только Bento-уровней")
     bento_hex_input = st.text_area("Введите HEX только для Bento-уровней:", key="bento_parser", height=200)
-    if st.button("🔍 Распарсить Bento HEX"):
+    if st.button("🔍 Распарсить Bento HEX", key="parse_bento"):
         parsed = parse_bento_only(bento_hex_input)
-        st.session_state.parsed_bento = parsed
+        if parsed and len(parsed) > 0:
+            st.session_state.parsed_bento = parsed
+        else:
+            st.session_state.parsed_bento = None
 
     if "parsed_bento" in st.session_state:
         inputs = st.session_state.parsed_bento
@@ -357,15 +407,15 @@ with tab2:
         for idx, level in enumerate(bento_levels):
             with st.expander(level["name"], expanded=True):
                 cols = st.columns(3)
-                l1 = cols[0].number_input("L1", value=inputs[idx][0], format="%.4f", key=f"bento_l1_{idx}")
-                l1a = cols[1].number_input("L1A", value=inputs[idx][1], format="%.4f", key=f"bento_l1a_{idx}")
-                l2 = cols[0].number_input("L2", value=inputs[idx][2], format="%.4f", key=f"bento_l2_{idx}")
-                l2a = cols[1].number_input("L2A", value=inputs[idx][3], format="%.4f", key=f"bento_l2a_{idx}")
-                l3 = cols[0].number_input("L3", value=inputs[idx][4], format="%.4f", key=f"bento_l3_{idx}")
-                l3a = cols[1].number_input("L3A", value=inputs[idx][5], format="%.4f", key=f"bento_l3a_{idx}")
+                l1 = cols[0].number_input("L1", value=inputs[idx][0], format="%.4f", key=f"parse_bento_l1_{idx}")
+                l1a = cols[1].number_input("L1A", value=inputs[idx][1], format="%.4f", key=f"parse_bento_l1a_{idx}")
+                l2 = cols[0].number_input("L2", value=inputs[idx][2], format="%.4f", key=f"parse_bento_l2_{idx}")
+                l2a = cols[1].number_input("L2A", value=inputs[idx][3], format="%.4f", key=f"parse_bento_l2a_{idx}")
+                l3 = cols[0].number_input("L3", value=inputs[idx][4], format="%.4f", key=f"parse_bento_l3_{idx}")
+                l3a = cols[1].number_input("L3A", value=inputs[idx][5], format="%.4f", key=f"parse_bento_l3a_{idx}")
                 edited_inputs.append([l1, l1a, l2, l2a, l3, l3a])
 
-        if st.button("💾 Сохранить как Bento HEX"):
+        if st.button("💾 Сохранить как Bento HEX", key="save_bento_hex"):
             full_hex = generate_hex(edited_inputs, bento_levels, level_slices_bento, start_header=False)
             st.text_area("Обновлённый HEX (Bento):", value=full_hex, height=300)
             st.download_button(label="⬇️ bento_updated.hex", data=full_hex, file_name="bento_updated.hex")
