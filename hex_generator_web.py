@@ -359,7 +359,7 @@ def generate_bayer_hex(values_list, level_names):
 
         lines.extend(modified_block)
 
-    full_hex = "\n".join(lines)
+    full_hex = "".join(lines)
     return full_hex
 
 
